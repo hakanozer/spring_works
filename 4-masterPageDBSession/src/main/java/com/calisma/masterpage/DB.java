@@ -6,6 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import java.util.Base64;
+import java.util.Random;
+
+
 public class DB {
 
 
@@ -103,6 +107,31 @@ public class DB {
 		} catch (java.security.NoSuchAlgorithmException e) {
 		}
 		return null;
+	}
+	
+	public static String sifrele(String data, int i) {
+		byte[] dizi = null;
+		Random rd = new Random();
+		int ri = rd.nextInt(899) + 100;
+		for (int j = 0; j < i; j++) {
+			dizi = Base64.getEncoder().encode(data.getBytes());
+			data = new String(dizi);
+		}
+		String sifrelenmis = new String(dizi) + MD5("" + ri);
+		System.out.println("sifrelenmis" + sifrelenmis);
+		return sifrelenmis;
+	}
+
+	public static String sifreCoz(String data, int i) {
+		byte[] dizi = null;
+		data = data.substring(0, data.length() - 32);
+		for (int j = 0; j < i; j++) {
+			dizi = Base64.getDecoder().decode(data.getBytes());
+			data = new String(dizi);
+		}
+		String cozulmus = new String(dizi);
+		System.out.println("cozulmus" + cozulmus);
+		return cozulmus;
 	}
 	
 }
