@@ -20,7 +20,7 @@ public class API {
         }
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("https://newsapi.org/v2/")
+                .baseUrl("http://jsonbulut.com/json/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build())
                 .build();

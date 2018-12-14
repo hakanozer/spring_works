@@ -1,39 +1,52 @@
 package com.calisma.retrofitusing;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.PostConstruct;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-/**
- * Handles requests for the application home page.
- */
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+
 @Controller
 public class HomeController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+	List<Bilgiler> data = new ArrayList<Bilgiler>();
 	
-	/**
-	 * Simply selects the home view to render by returning its name.
-	 */
+	public HomeController() {
+		Services services = API.getClient().create(Services.class);
+		Call<JsonData> dt = services.urunGetir("3ed9209e2e113aa95774cf7117db20b8", "0");
+		dt.enqueue(new Callback<JsonData>() {
+			
+			@Override
+			public void onResponse(Call<JsonData> arg0, Response<JsonData> arg1) {
+				JsonData jdt = arg1.body();
+				data = jdt.getProducts().get(0).getBilgiler();
+			}
+			
+			@Override
+			public void onFailure(Call<JsonData> arg0, Throwable arg1) {
+				System.err.println("Hata : " + arg1.getMessage() );
+			}
+		});
+	}
+	
+	
+	
+	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model) {
-		logger.info("Welcome home! The client locale is {}.", locale);
-		
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		
-		String formattedDate = dateFormat.format(date);
-		
-		model.addAttribute("serverTime", formattedDate );
-		
+	public String home(Model model) {
+		model.addAttribute("data", data);
 		return "home";
 	}
+
+
 	
 }
