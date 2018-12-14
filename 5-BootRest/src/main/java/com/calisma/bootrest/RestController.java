@@ -6,12 +6,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
+	
+	@Autowired DriverManagerDataSource xyz;
 	
 	DB db = new DB();
 
@@ -65,6 +69,30 @@ public class RestController {
 			}
 		} catch (Exception e) {
 			System.err.println("Hata : " + e);
+		}
+		return hm;
+	}
+	
+	// delete user
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
+	public HashMap<String, Object> delete(int id) {
+		HashMap<String, Object> hm = new HashMap<>();
+		try {
+			String query = "delete from user where uid = ?";
+			PreparedStatement pre = xyz.getConnection().prepareStatement(query);
+			pre.setInt(1, id);
+			int statu = pre.executeUpdate();
+			if (statu > 0) {
+				hm.put("statu", true);
+				hm.put("message", "Silme işlemi başarılı");
+			}else {
+				hm.put("statu", false);
+				hm.put("message", "Silme hatasi");
+			}
+		} catch (Exception e) {
+			System.err.println("delete error : " + e);
+			hm.put("statu", false);
+			hm.put("message", "Silme hatasi");
 		}
 		return hm;
 	}
